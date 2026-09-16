@@ -19,7 +19,7 @@ services:
       # 超级用户（部署引导）：启动时自动创建；密码从宿主机环境变量注入，生产必须设置强密码
       - SUPERUSER_USERNAME=${SUPERUSER_USERNAME:-superuser}
       - SUPERUSER_PASSWORD=${SUPERUSER_PASSWORD:-}
-      - SUPERUSER_EMAIL=${SUPERUSER_EMAIL:-superuser@local.local}
+      - SUPERUSER_EMAIL=${SUPERUSER_EMAIL:-superuser@example.com}
       - SUPERUSER_FULL_NAME=${SUPERUSER_FULL_NAME:-Super User}
       - SUPERUSER_SERVICE_NAME=${SUPERUSER_SERVICE_NAME:-default}
     volumes:

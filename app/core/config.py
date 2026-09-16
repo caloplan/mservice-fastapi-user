@@ -51,7 +51,7 @@ class Settings(BaseSettings):
     # 超级用户（部署引导：服务启动时按以下配置自动创建；SUPERUSER_PASSWORD 为空则不创建）
     SUPERUSER_USERNAME: str = "superuser"
     SUPERUSER_PASSWORD: str = ""          # 生产环境必须显式注入强密码
-    SUPERUSER_EMAIL: str = "superuser@local.local"
+    SUPERUSER_EMAIL: str = "superuser@example.com"
     SUPERUSER_FULL_NAME: str = "Super User"
     SUPERUSER_SERVICE_NAME: str = "default"
 

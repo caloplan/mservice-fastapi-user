@@ -1,6 +1,23 @@
 # User Service - 用户微服务
 
 基于 FastAPI 的用户微服务，提供完整的认证、授权和用户管理功能。JWT 采用 RS256 非对称签名并支持自动密钥轮换，公钥通过 JWKS 端点公开供其他微服务验证。
+## 相关项目（CaloPlan 全家桶）
+
+CaloPlan 全栈项目统一托管在 GitHub Organization [caloplan](https://github.com/caloplan)：
+
+| 类型 | 项目 | 与本项目关系 |
+| --- | --- | --- |
+| 前端 | [coloplan-v2](https://github.com/caloplan/coloplan-v2) | 客户端（登录 / Account 页） |
+| SDK | [caloplan-core](https://github.com/caloplan/caloplan-core) | 业务核心（兄弟模块） |
+| SDK | [caloplan-user](https://github.com/caloplan/caloplan-user) | 用户模块 SDK（对接本服务） |
+| SDK | [caloplan-chat](https://github.com/caloplan/caloplan-chat) | AI 对话 SDK（Token 来源） |
+| SDK | [caloplan-cache](https://github.com/caloplan/caloplan-cache) | 通用缓存（Token 持久化） |
+| 服务 | [fastapi-chat-service](https://github.com/caloplan/fastapi-chat-service) | AI 对话微服务（消费本服务 JWT） |
+| 服务 | [fastapi-file-service](https://github.com/caloplan/fastapi-file-service) | 图片上传微服务（消费本服务 JWT） |
+| 服务 | [mservice-fastapi-metastorage](https://github.com/caloplan/mservice-fastapi-metastorage) | 元数据微服务（消费本服务 JWT） |
+| 服务（本仓库） | [mservice-fastapi-user](https://github.com/caloplan/mservice-fastapi-user) | 认证 / 用户微服务 |
+
+本服务是全家桶的认证底座：签发 RS256 JWT 并通过 JWKS 公开公钥，所有兄弟微服务（chat / file / metastorage）均消费本服务令牌。
 
 ## 技术栈
 

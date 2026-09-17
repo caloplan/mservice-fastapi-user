@@ -1,6 +1,7 @@
 # User Service - 用户微服务
 
 基于 FastAPI 的用户微服务，提供完整的认证、授权和用户管理功能。JWT 采用 RS256 非对称签名并支持自动密钥轮换，公钥通过 JWKS 端点公开供其他微服务验证。
+
 ## 相关项目（CaloPlan 全家桶）
 
 CaloPlan 全栈项目统一托管在 GitHub Organization [caloplan](https://github.com/caloplan)：

@@ -64,6 +64,13 @@ class EmailService:
                 detail="不支持的验证码场景",
             )
 
+        # SMTP 未配置时直接返回明确错误，避免底层发信报错（不消耗验证码/冷却/当日次数）
+        if not settings.SMTP_USER or not settings.SMTP_PASSWORD:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="邮件服务未配置（SMTP_USER / SMTP_PASSWORD），请联系管理员",
+            )
+
         email_norm = email.strip().lower()
         if await self.redis.exists(_cooldown_key(scene, email_norm)):
             raise HTTPException(
@@ -145,6 +152,10 @@ class EmailService:
 
     async def _deliver_email(self, to: str, code: str) -> None:
         """通过网易 SMTP 发送验证码邮件（测试中可替换该方法以拦截真实发信）。"""
+        # 双保险：防止 SMTP_USER 为空时 formataddr 生成 "名称 <>" 非法地址
+        if not settings.SMTP_USER or not settings.SMTP_PASSWORD:
+            raise RuntimeError("SMTP 未配置：SMTP_USER / SMTP_PASSWORD 为空")
+
         subject = f"[{settings.APP_NAME}] 邮箱验证码"
         expire_minutes = settings.VERIFY_CODE_EXPIRE_SECONDS // 60
         text = (

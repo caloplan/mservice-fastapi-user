@@ -7,6 +7,7 @@ import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 
 import app.core.redis_client as redis_module
+from app.core.config import settings
 from app.core.database import Base, engine
 from app.main import app
 from app.services.email_service import EmailService
@@ -76,6 +77,16 @@ async def setup_database():
 async def _fake_deliver(self, to: str, code: str) -> None:
     """拦截真实 SMTP 发信。"""
     return None
+
+
+@pytest.fixture(autouse=True)
+def _smtp_configured(monkeypatch):
+    """测试环境视为 SMTP 已配置（真实发信已被 _deliver_email 拦截）。
+
+    需验证「未配置 SMTP 返回 503」的测试可在用例内显式 monkeypatch 回空值覆盖本设置。
+    """
+    monkeypatch.setattr(settings, "SMTP_USER", "test@example.com")
+    monkeypatch.setattr(settings, "SMTP_PASSWORD", "test-password")
 
 
 @pytest_asyncio.fixture(autouse=True)

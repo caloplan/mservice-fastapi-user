@@ -4,6 +4,7 @@ from datetime import datetime
 
 import pytest
 
+from app.core.config import settings
 from app.services.email_service import EmailService
 
 
@@ -119,3 +120,19 @@ async def test_send_code_invalid_scene(client, monkeypatch):
         json={"email": "test@example.com", "scene": "unknown"},
     )
     assert response.status_code == 400
+
+
+@pytest.mark.asyncio
+async def test_send_code_smtp_not_configured(client, monkeypatch, setup_redis):
+    """SMTP_USER / SMTP_PASSWORD 未配置时返回 503 明确配置错误（而非底层发信 502）。"""
+    monkeypatch.setattr(settings, "SMTP_USER", "")
+    monkeypatch.setattr(settings, "SMTP_PASSWORD", "")
+    response = await client.post(
+        "/api/v1/auth/email/code",
+        json={"email": "test@example.com"},
+    )
+    assert response.status_code == 503
+    assert "邮件服务未配置" in response.json()["detail"]
+    # 未消耗任何 Redis 状态（不写验证码、不写冷却）
+    assert await setup_redis.get("verify:code:register:test@example.com") is None
+    assert await setup_redis.exists("verify:cooldown:register:test@example.com") == 0

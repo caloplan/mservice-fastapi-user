@@ -9,6 +9,14 @@ services:
       - DATABASE_URL=sqlite+aiosqlite:///./data/user_service.db
       # Redis（验证码 / Token 服务端管控存储）；值从同目录 .env 注入
       - REDIS_URL=${REDIS_URL:-redis://localhost:6379/0}
+      # 网易 SMTP（验证码邮件发送）；值从同目录 .env 注入，SMTP_USER/SMTP_PASSWORD 必须配置否则发信返回 503
+      - SMTP_HOST=${SMTP_HOST:-smtp.163.com}
+      - SMTP_PORT=${SMTP_PORT:-465}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+      - SMTP_FROM_NAME=${SMTP_FROM_NAME:-User Service}
+      - SMTP_USE_TLS=${SMTP_USE_TLS:-True}
+      - SMTP_TIMEOUT=${SMTP_TIMEOUT:-10}
       # JWT 非对称加密（RS256）：密钥目录通过 ./keys 卷挂载（勿烘焙进镜像）
       - JWT_PRIVATE_KEY=keys/jwt_private.pem
       - JWT_PUBLIC_KEY=keys/jwt_public.pem

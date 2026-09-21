@@ -28,6 +28,25 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite+aiosqlite:///./data/user_service.db"
     DATABASE_ECHO: bool = False
 
+    # Redis（邮箱验证码 / Token 服务端管控存储）
+    REDIS_URL: str = "redis://localhost:6379/0"
+
+    # SMTP（网易邮箱发件）
+    SMTP_HOST: str = "smtp.163.com"
+    SMTP_PORT: int = 465
+    SMTP_USER: str = ""                  # 发件邮箱账号
+    SMTP_PASSWORD: str = ""              # 客户端授权码（非登录密码）
+    SMTP_FROM_NAME: str = "User Service" # 发件人显示名
+    SMTP_USE_TLS: bool = True            # True=465 隐式 TLS；False=25 普通端口
+    SMTP_TIMEOUT: int = 10
+
+    # 邮箱验证码
+    VERIFY_CODE_LENGTH: int = 6                    # 验证码位数
+    VERIFY_CODE_EXPIRE_SECONDS: int = 300          # 有效期（秒）
+    VERIFY_CODE_COOLDOWN_SECONDS: int = 60         # 同一邮箱重发间隔（秒）
+    VERIFY_CODE_DAILY_LIMIT: int = 10              # 同一邮箱每日发送上限
+    VERIFY_CODE_MAX_ATTEMPTS: int = 5              # 校验失败次数上限（超出需重新获取）
+
     # JWT（RS256 非对称加密：私钥签发，公钥校验）
     # JWT_PRIVATE_KEY / JWT_PUBLIC_KEY 作为首次启动的旧 PEM 迁移导入来源（路径或 PEM 字符串）
     JWT_PRIVATE_KEY: str = "keys/jwt_private.pem"

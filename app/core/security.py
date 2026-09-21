@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from typing import Any
+from uuid import uuid4
 
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -41,8 +42,9 @@ def _create_token(
     role: str,
     expires_delta: timedelta,
     token_type: str,
+    jti: str | None = None,
 ) -> str:
-    """使用当前签名密钥生成 JWT 令牌（Header 携带 kid）。"""
+    """使用当前签名密钥生成 JWT 令牌（Header 携带 kid，payload 携带 jti）。"""
     expire = datetime.now(timezone.utc) + expires_delta
     payload: dict[str, Any] = {
         "sub": subject,
@@ -50,6 +52,7 @@ def _create_token(
         "service_name": service_name,
         "role": role,
         "type": token_type,
+        "jti": jti or uuid4().hex,
         "exp": expire,
     }
     kid, private_key = key_manager.get_signing_key()
@@ -61,7 +64,13 @@ def _create_token(
     )
 
 
-def create_access_token(subject: str, user_id: int, service_name: str, role: str) -> str:
+def create_access_token(
+    subject: str,
+    user_id: int,
+    service_name: str,
+    role: str,
+    jti: str | None = None,
+) -> str:
     """生成访问令牌（默认 30 分钟）。"""
     return _create_token(
         subject=subject,
@@ -70,10 +79,17 @@ def create_access_token(subject: str, user_id: int, service_name: str, role: str
         role=role,
         expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
         token_type="access",
+        jti=jti,
     )
 
 
-def create_refresh_token(subject: str, user_id: int, service_name: str, role: str) -> str:
+def create_refresh_token(
+    subject: str,
+    user_id: int,
+    service_name: str,
+    role: str,
+    jti: str | None = None,
+) -> str:
     """生成刷新令牌（默认 7 天）。"""
     return _create_token(
         subject=subject,
@@ -82,6 +98,7 @@ def create_refresh_token(subject: str, user_id: int, service_name: str, role: st
         role=role,
         expires_delta=timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS),
         token_type="refresh",
+        jti=jti,
     )
 
 

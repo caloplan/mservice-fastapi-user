@@ -14,6 +14,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str = Field(..., min_length=8, max_length=30)
+    code: str = Field(..., min_length=4, max_length=8, pattern=r"^\d{4,8}$", description="邮箱验证码（注册必填）")
 
     @field_validator("password")
     @classmethod

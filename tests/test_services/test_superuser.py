@@ -126,16 +126,12 @@ async def test_skip_when_username_exists(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_jwt_contains_role(client, monkeypatch):
+async def test_jwt_contains_role(client, monkeypatch, register_user):
     """普通用户注册 token 携带 role=user；superuser 登录 token 携带 role=superuser。"""
-    register_resp = await client.post(
-        "/api/v1/auth/register",
-        json={
-            "username": "normaluser",
-            "email": "normal@example.com",
-            "password": "Test@1234",
-            "full_name": "Normal User",
-        },
+    register_resp = await register_user(
+        username="normaluser",
+        email="normal@example.com",
+        full_name="Normal User",
     )
     assert register_resp.status_code == 201
     normal_payload = decode_token(register_resp.json()["access_token"])

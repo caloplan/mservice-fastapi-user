@@ -4,17 +4,12 @@ import pytest
 
 
 @pytest.mark.asyncio
-async def test_get_me(client):
+async def test_get_me(client, register_user):
     """测试获取当前用户信息。"""
-    register_resp = await client.post(
-        "/api/v1/auth/register",
-        json={
-            "username": "testuser",
-            "email": "test@example.com",
-            "password": "Test@1234",
-            "full_name": "Test User",
-            "service_name": "default",
-        },
+    register_resp = await register_user(
+        email="test@example.com",
+        full_name="Test User",
+        service_name="default",
     )
     token = register_resp.json()["access_token"]
     response = await client.get(
@@ -37,17 +32,9 @@ async def test_get_me_unauthorized(client):
 
 
 @pytest.mark.asyncio
-async def test_update_me(client):
+async def test_update_me(client, register_user):
     """测试更新当前用户信息。"""
-    register_resp = await client.post(
-        "/api/v1/auth/register",
-        json={
-            "username": "testuser",
-            "email": "test@example.com",
-            "password": "Test@1234",
-            "service_name": "default",
-        },
-    )
+    register_resp = await register_user(email="test@example.com", service_name="default")
     token = register_resp.json()["access_token"]
     response = await client.put(
         "/api/v1/users/me",
@@ -61,17 +48,9 @@ async def test_update_me(client):
 
 
 @pytest.mark.asyncio
-async def test_change_password(client):
+async def test_change_password(client, register_user):
     """测试修改密码。"""
-    register_resp = await client.post(
-        "/api/v1/auth/register",
-        json={
-            "username": "testuser",
-            "email": "test@example.com",
-            "password": "Test@1234",
-            "service_name": "default",
-        },
-    )
+    register_resp = await register_user(email="test@example.com", service_name="default")
     token = register_resp.json()["access_token"]
     response = await client.post(
         "/api/v1/users/me/change-password",
@@ -88,17 +67,9 @@ async def test_change_password(client):
 
 
 @pytest.mark.asyncio
-async def test_delete_me(client):
+async def test_delete_me(client, register_user):
     """测试软删除用户。"""
-    register_resp = await client.post(
-        "/api/v1/auth/register",
-        json={
-            "username": "testuser",
-            "email": "test@example.com",
-            "password": "Test@1234",
-            "service_name": "default",
-        },
-    )
+    register_resp = await register_user(email="test@example.com", service_name="default")
     token = register_resp.json()["access_token"]
     response = await client.delete(
         "/api/v1/users/me",
@@ -114,17 +85,9 @@ async def test_delete_me(client):
 
 
 @pytest.mark.asyncio
-async def test_get_user_by_id(client):
+async def test_get_user_by_id(client, register_user):
     """测试按 ID 获取用户。"""
-    register_resp = await client.post(
-        "/api/v1/auth/register",
-        json={
-            "username": "testuser",
-            "email": "test@example.com",
-            "password": "Test@1234",
-            "service_name": "default",
-        },
-    )
+    register_resp = await register_user(email="test@example.com")
     token = register_resp.json()["access_token"]
     response = await client.get(
         "/api/v1/users/1",
@@ -135,26 +98,18 @@ async def test_get_user_by_id(client):
 
 
 @pytest.mark.asyncio
-async def test_list_users(client):
+async def test_list_users(client, register_user):
     """测试获取用户列表。"""
     for i in range(3):
-        await client.post(
-            "/api/v1/auth/register",
-            json={
-                "username": f"user{i}",
-                "email": f"user{i}@example.com",
-                "password": "Test@1234",
-                "service_name": "default",
-            },
+        await register_user(
+            username=f"user{i}",
+            email=f"user{i}@example.com",
+            service_name="default",
         )
-    register_resp = await client.post(
-        "/api/v1/auth/register",
-        json={
-            "username": "adminuser",
-            "email": "admin@example.com",
-            "password": "Test@1234",
-            "service_name": "default",
-        },
+    register_resp = await register_user(
+        username="adminuser",
+        email="admin@example.com",
+        service_name="default",
     )
     token = register_resp.json()["access_token"]
     response = await client.get(

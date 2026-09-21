@@ -8,6 +8,7 @@ from app.api.v1 import api_router
 from app.core.bootstrap import init_superuser
 from app.core.config import settings
 from app.core.database import init_db
+from app.core.redis_client import close_redis_client, get_redis_client
 from app.core.security import get_jwks, key_manager
 from app.utils.logger import setup_logger
 
@@ -45,10 +46,20 @@ async def lifespan(app: FastAPI):
         "JWT 密钥轮换后台任务已启动（每 %s 小时检查一次）",
         settings.JWT_ROTATION_CHECK_HOURS,
     )
+
+    # Redis：验证码与 Token 服务端管控的存储后端
+    try:
+        redis_client = get_redis_client()
+        await redis_client.ping()
+        logger.info("Redis 连接成功（%s）", settings.REDIS_URL)
+    except Exception:
+        logger.warning("Redis 连接失败（%s），验证码与 Token 服务端管控功能将不可用", settings.REDIS_URL)
+
     try:
         yield
     finally:
         rotation_task.cancel()
+        await close_redis_client()
         logger.info("应用已关闭")
 
 

@@ -17,6 +17,12 @@ python-jose[cryptography]>=3.3.0
 passlib[bcrypt]>=1.7.4
 bcrypt>=4.0.0,<4.1
 
+# Redis（验证码 / Token 存储）
+redis>=5.0.0
+
+# 邮件（网易 SMTP 验证码）
+aiosmtplib>=3.0.0
+
 # 说明
 # - 已移除 alembic（当前未使用数据库迁移，由 init_db 自动建表）
 # - 已移除 python-dotenv 显式声明（由 pydantic-settings 传递提供）
